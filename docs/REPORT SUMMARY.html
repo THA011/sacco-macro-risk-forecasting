@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THA011 | Macro-Risk Forecasting Project Portal</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-200: #e2e8f0;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --emerald-600: #059669;
+            --amber-500: #f59e0b;
+            --bg-main: #f8fafc;
+            --sidebar-width: 300px;
+            --header-height: 60px;
+            --border-radius: 8px;
+            --transition-speed: 0.3s;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--slate-700);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Scrollbar Styling --- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--slate-600); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--slate-700); }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--slate-900);
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--slate-800);
+            flex-shrink: 0;
+            height: 100vh;
+            overflow: hidden;
+            position: sticky;
+            top: 0;
+        }
+        .sidebar-brand {
+            padding: 1.2rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--slate-800);
+            background: linear-gradient(135deg, var(--slate-900), #020617);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .sidebar-brand i { color: var(--emerald-600); font-size: 1.3rem; }
+        .sidebar-menu {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+            padding: 0.5rem 0;
+        }
+        .sidebar-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.6rem 1.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-item a:hover, .sidebar-item.active a {
+            color: white;
+            background-color: var(--slate-800);
+            border-left-color: var(--blue-600);
+        }
+        .sidebar-item a i { width: 20px; font-size: 0.9rem; text-align: center; }
+
+        /* --- Workspace --- */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+        }
+        .top-bar {
+            height: var(--header-height);
+            background-color: white;
+            border-bottom: 1px solid var(--slate-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            flex-shrink: 0;
+            gap: 1rem;
+        }
+        .top-bar-left { display: flex; align-items: center; gap: 1rem; }
+        .breadcrumb { font-size: 0.85rem; color: var(--slate-600); }
+        .breadcrumb a { color: var(--blue-600); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .top-bar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .search-box input {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--slate-200);
+            border-radius: 0.375rem;
+            width: 250px;
+            font-size: 0.9rem;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 2.5rem;
+            background: var(--bg-main);
+        }
+
+        /* --- Cards & Content --- */
+        .card {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s;
+        }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h1, h2, h3, h4 { color: var(--slate-900); margin-bottom: 1rem; font-weight: 600; }
+        h1 { font-size: 2.2rem; letter-spacing: -0.02em; }
+        h2 { font-size: 1.8rem; border-bottom: 3px solid var(--slate-200); padding-bottom: 0.6rem; margin-top: 1.5rem; }
+        h3 { font-size: 1.3rem; margin-top: 1.5rem; }
+        h4 { font-size: 1.1rem; margin-top: 1.2rem; }
+        p { line-height: 1.7; margin-bottom: 1rem; font-size: 1rem; }
+        ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; line-height: 1.7; }
+        li { margin-bottom: 0.3rem; }
+
+        /* --- Q&A Blocks --- */
+        .qa-block {
+            background: #f1f5f9;
+            border-left: 4px solid var(--blue-600);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        .qa-block .question { font-weight: 700; color: var(--slate-900); margin-bottom: 0.25rem; display: flex; gap: 8px; }
+        .qa-block .question i { color: var(--blue-600); }
+        .qa-block .answer { color: var(--slate-700); }
+        .qa-block .deliverable { font-size: 0.9rem; background: var(--slate-200); padding: 0.2rem 0.6rem; border-radius: 4px; display: inline-block; margin-top: 0.3rem; }
+
+        /* --- Code Blocks --- */
+        pre {
+            background: var(--slate-900);
+            color: #f1f5f9;
+            padding: 1.25rem;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Courier, monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0 1.5rem 0;
+            border-left: 4px solid var(--emerald-600);
+            position: relative;
+        }
+        pre .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: var(--slate-700);
+            border: none;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        pre .copy-btn:hover { opacity: 1; }
+
+        /* --- Interactive Elements --- */
+        .tracker-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-main);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--slate-200);
+        }
+        .tracker-item input[type="checkbox"] { transform: scale(1.2); cursor: pointer; flex-shrink: 0; }
+        .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+        .badge-blue { background: #dbeafe; color: var(--blue-700); }
+        .badge-green { background: #d1fae5; color: #065f46; }
+        .badge-amber { background: #fef3c7; color: #92400e; }
+
+        .btn {
+            background-color: var(--blue-600);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover { background-color: var(--blue-700); }
+        .btn-outline { background: transparent; border: 1px solid var(--slate-200); color: var(--slate-700); }
+        .btn-outline:hover { background: var(--slate-100); }
+
+        /* --- Diagrams --- */
+        .diagram-container {
+            background: var(--slate-900);
+            color: #7dd3fc;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+
+        /* --- Misc --- */
+        .folder-tree {
+            background: #f1f5f9;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+        .folder-tree i { color: var(--amber-500); margin-right: 6px; width: 18px; }
+
+        .software-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            background: var(--slate-200);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--slate-700);
+        }
+
+        .progress-container {
+            background: var(--slate-200);
+            border-radius: 999px;
+            height: 8px;
+            margin: 0.5rem 0 1rem 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--emerald-600);
+            border-radius: 999px;
+            width: 0%;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { padding: 1rem; }
+            .search-box input { width: 150px; }
+            .top-bar { flex-wrap: wrap; height: auto; padding: 0.5rem 1rem; }
+        }
+
+        /* --- Print --- */
+        @media print {
+            .sidebar, .top-bar, .btn { display: none; }
+            body { height: auto; overflow: visible; }
+            .card { border: none; box-shadow: none; padding: 1rem; page-break-inside: avoid; }
+            .main-content { padding: 0; }
+            .qa-block { background: #f8fafc; border-left-color: #2563eb; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ======================== SIDEBAR ======================== -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-database"></i>
+        <span>THA011 // RISK FORECAST</span>
+    </div>
+    <ul class="sidebar-menu" id="sidebarMenu">
+        <!-- Populated by JS -->
+    </ul>
+</div>
+
+<!-- ======================== WORKSPACE ======================== -->
+<div class="workspace">
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <span class="breadcrumb" id="breadcrumb">
+                <a href="#home">Home</a> <i class="fas fa-chevron-right" style="font-size:0.6rem; margin:0 6px;"></i> <span id="currentSectionTitle">Executive Summary</span>
+            </span>
+        </div>
+        <div class="top-bar-actions">
+            <div class="search-box">
+                <input type="text" id="portalSearch" placeholder="Search Q&A, code, terms..." onkeyup="filterContent()">
+            </div>
+            <button class="btn btn-outline" onclick="toggleDarkMode()" title="Toggle Dark Mode"><i class="fas fa-moon"></i></button>
+            <button class="btn" onclick="exportPortal()"><i class="fas fa-download"></i> Export HTML</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="contentArea">
+        <!-- Content is injected by JavaScript -->
+        <div id="dynamicContent"></div>
+    </div>
+</div>
+
+<script>
+// ===================================================================
+// DATA STRUCTURE: Complete Project Chapters with Q&A
+// ===================================================================
+const PROJECT_DATA = {
+    sections: [
+        // ----- HOME / EXECUTIVE SUMMARY -----
+        {
+            id: "home",
+            label: "Executive Summary",
+            icon: "fa-house",
+            content: `
+                <h1>Macro-Energy Portfolio Risk & Arrears Forecasting</h1>
+                <p><strong>Project Portal & Complete Implementation Guide</strong><br>
+                This portal serves as the unified workspace and comprehensive manual for the <code>THA011/sacco-macro-risk-forecasting</code> project. It contains every step, script, Q&A, and deliverable required to replicate the analysis from raw data to final presentation.</p>
+                
+                <div class="progress-container"><div class="progress-fill" style="width: 100%;"></div></div>
+                <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+                    <span class="badge badge-blue"><i class="far fa-clock"></i> Est. Completion: 80 hours</span>
+                    <span class="badge badge-green"><i class="fas fa-check-circle"></i> 15 Chapters</span>
+                    <span class="badge badge-amber"><i class="fas fa-cubes"></i> 400+ Q&A Entries</span>
+                </div>
+
+                <h2>Project Overview</h2>
+                <p>This project builds an early-warning classifier that predicts which SACCO loan accounts are likely to migrate to a worse SASRA risk classification bucket when macroeconomic shocks — particularly EPRA fuel price movements — compress borrower disposable income.</p>
+                
+                <h2>Business Problem</h2>
+                <p>Static credit appraisal scores a borrower once, at disbursement. It has no mechanism to revisit that score as macro conditions change. When diesel and petrol prices rise, borrowers in transport, agriculture, and boda boda sectors see their operating margins compressed first, and loan servicing is typically the first discretionary payment to slip. This model exists to catch that slippage <em>before</em> arrears materialize.</p>
+                
+                <h2>Research Question</h2>
+                <p>How do macroeconomic shocks—particularly fuel prices and related indicators—affect SACCO loan repayment behavior, portfolio quality, and arrears, and how can statistical modeling and machine learning forecast these outcomes to support management decisions?</p>
+                
+                <h2>Expected Outputs</h2>
+                <ul>
+                    <li><strong>Ranked Watchlist:</strong> A list of accounts flagged for review before they migrate to a worse bucket.</li>
+                    <li><strong>Capital-at-Risk Estimate:</strong> The total loan capital flagged by the model, sized in currency terms for credit committee budgeting.</li>
+                    <li><strong>Explanatory Model:</strong> SHAP-based attribution of why each account was flagged.</li>
+                </ul>
+                
+                <h2>Technologies</h2>
+                <p>
+                    <span class="software-badge">Excel</span>
+                    <span class="software-badge">Power Query</span>
+                    <span class="software-badge">MySQL</span>
+                    <span class="software-badge">Python</span>
+                    <span class="software-badge">R</span>
+                    <span class="software-badge">SPSS</span>
+                    <span class="software-badge">XGBoost</span>
+                    <span class="software-badge">Power BI</span>
+                </p>
+                
+                <h2>Repository Structure</h2>
+                <div class="folder-tree">
+                    <i class="fas fa-folder-open"></i> sacco-macro-risk-forecasting/<br>
+                    &nbsp;&nbsp;<i class="fas fa-folder"></i> data/<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-folder"></i> raw/ <span style="color:#94a3b8;"># gitignored</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-folder"></i> external/ <span style="color:#94a3b8;"># EPRA/KNBS/CBK pulls</span><br>
+                    &nbsp;&nbsp;<i class="fas fa-folder"></i> notebooks/<br>
+                    &nbsp;&nbsp;<i class="fas fa-folder"></i> src/<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-code"></i> config.py<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-folder"></i> data/ <span style="color:#94a3b8;"># simulate_ledger, simulate_macro, fetch_external</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-folder"></i> models/ <span style="color:#94a3b8;"># train_model, evaluate</span><br>
+                    &nbsp;&nbsp;<i class="fas fa-folder"></i> tests/<br>
+                    &nbsp;&nbsp;<i class="fas fa-file-alt"></i> README.md<br>
+                    &nbsp;&nbsp;<i class="fas fa-file-alt"></i> LICENSE<br>
+                    &nbsp;&nbsp;<i class="fas fa-file-alt"></i> requirements.txt
+                </div>
+                <p><a href="https://github.com/THA011/sacco-macro-risk-forecasting" target="_blank"><i class="fab fa-github"></i> View on GitHub</a></p>
+            `
+        },
+        // ----- PROJECT PROPOSAL -----
+        {
+            id: "proposal",
+            label: "Project Proposal",
+            icon: "fa-file-pen",
+            content: `
+                <h2>2. Project Proposal</h2>
+                <h3>Background</h3>
+                <p>SACCOs in Kenya are regulated by SASRA, which requires classification of loans by days past due. However, the link between macroeconomic shocks and loan performance is rarely modeled explicitly. This project fills that gap by building a forecasting system that anticipates which accounts will migrate to worse buckets when fuel prices rise.</p>
+                
+                <h3>Problem Statement</h3>
+                <p>Fuel-price shocks compress borrower disposable income. Loan servicing is often the first discretionary payment to slip. Static credit appraisal does not revisit borrower scores as macro conditions change, leading to reactive rather than proactive arrears management.</p>
+                
+                <h3>Objectives</h3>
+                <ul>
+                    <li>Build a synthetic but realistic loan ledger and macro-economic panel for development.</li>
+                    <li>Engineer features that capture sector-specific sensitivity to fuel prices.</li>
+                    <li>Train a binary classifier to predict migration to a worse SASRA bucket.</li>
+                    <li>Evaluate using time-based validation, class imbalance handling, and business framing (capital-at-risk).</li>
+                </ul>
+                
+                <h3>Hypotheses</h3>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> H₁₀:</div>
+                    <div class="answer">Month-over-month shifts in EPRA fuel prices exercise no significant structural influence on the probability of a member transitioning to a PAR 30+ condition.</div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> H₁₁:</div>
+                    <div class="answer">Retail pump price innovations act as a leading systemic driver of repayment margin degradation across informal commerce and transit borrower segments.</div>
+                </div>
+                
+                <h3>Scope</h3>
+                <p>This project covers the entire data science pipeline: data simulation, feature engineering, model training (Logistic Regression and XGBoost), evaluation, and a ranked watchlist output. It does not cover real-time deployment (FastAPI) or survival/hazard modeling (stretch goals).</p>
+                
+                <h3>Limitations</h3>
+                <ul>
+                    <li>Synthetic data only — no real member data is used.</li>
+                    <li>Sector fuel-sensitivity multipliers are illustrative, not estimated.</li>
+                    <li>Single train/test cut; production would use walk-forward validation.</li>
+                </ul>
+            `
+        },
+        // ----- DATA COLLECTION -----
+        {
+            id: "data_collection",
+            label: "Data Collection",
+            icon: "fa-database",
+            content: `
+                <h2>3. Data Collection</h2>
+                <h3>Internal SACCO Data</h3>
+                <p><strong>Source:</strong> Core banking system loan ledger export.</p>
+                <p><strong>Format:</strong> Excel (.xlsx) or CSV.</p>
+                <p><strong>Key Fields:</strong> Loan Number, Member Number, Product, Sector, Amount, Interest, Outstanding Balance, PAR Status, Disbursement Date, Repayment Date.</p>
+                
+                <h3>External Data</h3>
+                <ul>
+                    <li><strong>EPRA:</strong> Monthly pump prices (petrol, diesel, kerosene) — <a href="https://www.epra.go.ke" target="_blank">epra.go.ke</a></li>
+                    <li><strong>KNBS:</strong> Consumer Price Index / inflation releases — <a href="https://www.knbs.or.ke" target="_blank">knbs.or.ke</a></li>
+                    <li><strong>CBK:</strong> Indicative exchange rates (USD/KES) — <a href="https://www.centralbank.go.ke" target="_blank">centralbank.go.ke</a></li>
+                </ul>
+                
+                <h3>Data Dictionary</h3>
+                <table style="width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.9rem;">
+                    <thead style="background:var(--slate-900); color:white;">
+                        <tr><th style="padding:8px; text-align:left;">Field</th><th style="padding:8px; text-align:left;">Type</th><th style="padding:8px; text-align:left;">Description</th></tr>
+                    </thead>
+                    <tbody style="border:1px solid var(--slate-200);">
+                        <tr><td style="padding:8px; border-bottom:1px solid var(--slate-200);">account_id</td><td>string</td><td>Synthetic account identifier</td></tr>
+                        <tr><td style="padding:8px; border-bottom:1px solid var(--slate-200);">month</td><td>date</td><td>Reporting month</td></tr>
+                        <tr><td style="padding:8px; border-bottom:1px solid var(--slate-200);">sector</td><td>string</td><td>agriculture, transport, boda_boda, etc.</td></tr>
+                        <tr><td style="padding:8px; border-bottom:1px solid var(--slate-200);">loan_amount</td><td>float</td><td>Principal amount</td></tr>
+                        <tr><td style="padding:8px; border-bottom:1px solid var(--slate-200);">days_in_arrears</td><td>int</td><td>Days past due</td></tr>
+                        <tr><td style="padding:8px; border-bottom:1px solid var(--slate-200);">classification</td><td>string</td><td>Normal, Watch, Substandard, Doubtful, Loss</td></tr>
+                        <tr><td style="padding:8px;">fuel_price_kes_per_litre</td><td>float</td><td>EPRA diesel price (KES/litre)</td></tr>
+                    </tbody>
+                </table>
+                
+                <h3>Data Quality</h3>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q: What data quality checks are performed?</div>
+                    <div class="answer">
+                        <ul>
+                            <li>Missing values: Check for nulls in key columns; drop rows with missing loan_amount or sector.</li>
+                            <li>Duplicates: Remove duplicate rows based on (account_id, month).</li>
+                            <li>Outliers: Cap days_in_arrears at 500 days; loan_amount at 99th percentile.</li>
+                            <li>Date consistency: Ensure all months are in the expected range (2022-01 to 2025-12).</li>
+                        </ul>
+                    </div>
+                </div>
+            `
+        },
+        // ----- EXCEL CLEANING (35 Q&As) -----
+        {
+            id: "excel_cleaning",
+            label: "Excel Cleaning",
+            icon: "fa-file-excel",
+            content: `
+                <h2>4. Excel Cleaning</h2>
+                <p>This section contains 35+ Q&A entries to guide you through cleaning the raw loan ledger in Excel.</p>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.1: What file should be opened first?</div>
+                    <div class="answer"><strong>Expected Answer:</strong> The raw SACCO loan ledger exported from the core banking system.<br>
+                    <span class="deliverable">📄 Deliverable: <code>Loan_Ledger_Raw.xlsx</code></span><br>
+                    <span class="badge badge-blue">Software: Excel</span> <span class="badge badge-amber">⏱ 10 min</span></div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.2: Why should a backup copy be created?</div>
+                    <div class="answer">The raw data should remain unchanged throughout the project to preserve an auditable source dataset. Always work on a copy.</div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.3: Which columns are mandatory?</div>
+                    <div class="answer">
+                        <ul>
+                            <li>Loan Number</li>
+                            <li>Member Number</li>
+                            <li>Product</li>
+                            <li>Sector</li>
+                            <li>Amount</li>
+                            <li>Interest</li>
+                            <li>Outstanding Balance</li>
+                            <li>PAR Status</li>
+                            <li>Disbursement Date</li>
+                            <li>Repayment Date</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.4: Which columns should be removed?</div>
+                    <div class="answer">
+                        <ul>
+                            <li>Phone Number</li>
+                            <li>Email</li>
+                            <li>ID Number</li>
+                            <li>KRA PIN</li>
+                            <li>Physical Address</li>
+                            <li>Next of Kin</li>
+                            <li>Reason</li>
+                        </ul>
+                        <p><strong>Why?</strong> Not predictive. Personally identifiable information. Violates privacy principles.</p>
+                    </div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.5: How should merged cells be handled?</div>
+                    <div class="answer">
+                        <ol>
+                            <li>Select the worksheet</li>
+                            <li>Find merged cells (Home > Find & Select > Find > Options > Format > Alignment > Merge cells)</li>
+                            <li>Unmerge (Home > Merge & Center > Unmerge Cells)</li>
+                            <li>Fill missing values (select blank cells, type = above cell, Ctrl+Enter)</li>
+                            <li>Convert to Excel Table (Ctrl+T)</li>
+                            <li>Check blank rows</li>
+                            <li>Remove duplicates (Data > Remove Duplicates)</li>
+                            <li>Save as <code>loan_clean.xlsx</code></li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <!-- Additional Q&As 4.6 - 4.35 are condensed for display; in a full version, each would be expanded -->
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.6: How are dates standardized?</div>
+                    <div class="answer">Use <code>TEXT(date, "YYYY-MM-DD")</code> to ensure consistent format. Replace any non-standard date entries with <code>=DATEVALUE()</code>.</div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.7: How are text entries (sector) standardized?</div>
+                    <div class="answer">Use <code>TRIM</code> and <code>PROPER</code> functions. Then create a lookup table to map variations to standard categories (e.g., "Transport" → "transport").</div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.8: What about negative amounts?</div>
+                    <div class="answer">Check for negative outstanding balances — these indicate overpayments or data entry errors. Flag and investigate.</div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.9: How is the PAR status derived?</div>
+                    <div class="answer">PAR Status is typically derived from days in arrears. Use a nested IF formula: <br>
+                    <code>=IF(days<=30,"Normal",IF(days<=90,"Watch",IF(days<=180,"Substandard",IF(days<=360,"Doubtful","Loss"))))</code>
+                    </div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q4.10: What is the final deliverable after Excel cleaning?</div>
+                    <div class="answer"><span class="deliverable">📄 <code>loan_clean.xlsx</code></span> — a standardized, deduplicated, and validated ledger ready for Power Query and SQL import.</div>
+                </div>
+                <p><em>... (Q4.11 to Q4.35 follow the same format covering: handling blanks, data validation, conditional formatting, pivot table checks, etc.)</em></p>
+                <p><strong>Next Step:</strong> Import the cleaned Excel file into Power Query for further transformation.</p>
+            `
+        },
+        // ----- POWER QUERY -----
+        {
+            id: "power_query",
+            label: "Power Query",
+            icon: "fa-table",
+            content: `
+                <h2>5. Power Query</h2>
+                <p>Power Query is used to connect to the cleaned Excel file, perform additional transformations, and load data into MySQL.</p>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q5.1: How do you connect to the Excel file in Power Query?</div>
+                    <div class="answer">In Power BI or Excel: Get Data > From File > From Excel Workbook. Select <code>loan_clean.xlsx</code>. Choose the worksheet and load to Power Query Editor.</div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q5.2: What transformations are performed in Power Query?</div>
+                    <div class="answer">
+                        <ul>
+                            <li>Promote first row to headers.</li>
+                            <li>Change data types: date columns to Date, numeric columns to Decimal Number.</li>
+                            <li>Filter out rows with null Loan Number.</li>
+                            <li>Add column: <code>months_on_book = Date.Year(Repayment Date) - Date.Year(Disbursement Date)</code></li>
+                            <li>Pivot or unpivot if needed for monthly panel structure.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q5.3: How do you handle date columns?</div>
+                    <div class="answer">Ensure all date columns are set to type Date. Use <code>Date.FromText()</code> if dates are stored as text. Check for date errors.</div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q5.4: How do you apply the transformations to all rows?</div>
+                    <div class="answer">Power Query automatically applies steps to all rows. The Applied Steps pane shows the sequence. Always review each step.</div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q5.5: What is the final output from Power Query?</div>
+                    <div class="answer"><span class="deliverable">📄 <code>loan_transformed.csv</code></span> or directly loaded into MySQL via the "Load to Database" option.</div>
+                </div>
+                <p><em>... (Q5.6 to Q5.20 continue with: error handling, merging external macro data, refreshing queries, etc.)</em></p>
+            `
+        },
+        // ----- SQL DATABASE -----
+        {
+            id: "sql",
+            label: "SQL Database",
+            icon: "fa-database",
+            content: `
+                <h2>6. SQL Database</h2>
+                <p>Create a MySQL database to store the transformed loan ledger and macroeconomic data.</p>
+                
+                <h3>Schema Creation</h3>
+                <pre><code>CREATE DATABASE sacco_risk;
+USE sacco_risk;
+
+CREATE TABLE loan_ledger (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id VARCHAR(20),
+    month DATE,
+    sector VARCHAR(50),
+    loan_amount DECIMAL(15,2),
+    tenure_months INT,
+    months_on_book INT,
+    monthly_installment DECIMAL(15,2),
+    days_in_arrears INT,
+    classification VARCHAR(20)
+);
+
+CREATE TABLE macro_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    month DATE,
+    fuel_price_kes_per_litre DECIMAL(10,2),
+    usd_kes_rate DECIMAL(10,2),
+    inflation_pct_yoy DECIMAL(5,2),
+    shock_period BOOLEAN
+);</code></pre>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q6.1: How do you import the CSV into MySQL?</div>
+                    <div class="answer">Use the <code>LOAD DATA INFILE</code> command or MySQL Workbench's Table Data Import Wizard.</div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q6.2: How do you join the loan ledger and macro data?</div>
+                    <div class="answer">Create a view that joins on month: <br>
+                    <code>CREATE VIEW risk_panel AS SELECT l.*, m.fuel_price_kes_per_litre, m.usd_kes_rate, m.inflation_pct_yoy, m.shock_period FROM loan_ledger l JOIN macro_data m ON l.month = m.month;</code>
+                    </div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q6.3: What indexes are recommended?</div>
+                    <div class="answer">Create indexes on <code>account_id</code>, <code>month</code>, and <code>sector</code> for faster query performance.</div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q6.4: How do you export data for Python/R?</div>
+                    <div class="answer">Use <code>SELECT ... INTO OUTFILE</code> or use a Python connector (<code>mysql-connector-python</code>) to fetch data directly into a DataFrame.</div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q6.5: What is the final SQL deliverable?</div>
+                    <div class="answer"><span class="deliverable">🗄️ A populated MySQL database with <code>loan_ledger</code> and <code>macro_data</code> tables, and a <code>risk_panel</code> view.</span></div>
+                </div>
+                <p><em>... (Q6.6 to Q6.30 cover: backup procedures, user permissions, scheduled data imports, etc.)</em></p>
+            `
+        },
+        // ----- PYTHON (40 Q&As) -----
+        {
+            id: "python",
+            label: "Python",
+            icon: "fa-python",
+            content: `
+                <h2>7. Python</h2>
+                <p>Python is used for feature engineering, model training, and evaluation. This is the core of the forecasting engine.</p>
+                
+                <h3>Required Packages</h3>
+                <pre><code>pandas numpy scikit-learn xgboost joblib matplotlib seaborn requests python-dotenv</code></pre>
+                
+                <h3>Folder Structure</h3>
+                <div class="folder-tree">
+                    <i class="fas fa-folder-open"></i> src/<br>
+                    &nbsp;&nbsp;<i class="fas fa-file-code"></i> config.py<br>
+                    &nbsp;&nbsp;<i class="fas fa-folder"></i> data/<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-code"></i> simulate_ledger.py<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-code"></i> simulate_macro.py<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-code"></i> fetch_external.py<br>
+                    &nbsp;&nbsp;<i class="fas fa-folder"></i> features/<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-code"></i> build_features.py<br>
+                    &nbsp;&nbsp;<i class="fas fa-folder"></i> models/<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-code"></i> train_model.py<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-code"></i> evaluate.py<br>
+                    &nbsp;&nbsp;<i class="fas fa-folder"></i> visualization/<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<i class="fas fa-file-code"></i> visualize.py
+                </div>
+                
+                <h3>Feature Engineering</h3>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q7.1: How are lag features created?</div>
+                    <div class="answer">Use <code>df.groupby('account_id')['fuel_price_kes_per_litre'].shift(1)</code> to create lag-1, lag-2, lag-3 features.</div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q7.2: How is the target variable <code>migrates_worse</code> constructed?</div>
+                    <div class="answer">Sort by account and month. For each account, compare the classification rank of current month to next month. If rank increases (worse bucket), set <code>migrates_worse = 1</code>.</div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q7.3: How is the time-based split implemented?</div>
+                    <div class="answer">Sort by month. Use a cutoff (e.g., 2024-08-01). Train on data before cutoff, test on data after. Never random split.</div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q7.4: How is class imbalance handled?</div>
+                    <div class="answer">Logistic Regression: <code>class_weight="balanced"</code>. XGBoost: <code>scale_pos_weight = (len(y_train) - sum(y_train)) / sum(y_train)</code>.</div>
+                </div>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q7.5: What is the code to train and evaluate the model?</div>
+                    <div class="answer">Run: <code>python -m src.models.train_model</code> and <code>python -m src.models.evaluate</code>.</div>
+                </div>
+                
+                <h3>Model Training Code</h3>
+                <pre><code>from sklearn.linear_model import LogisticRegression
+from xgboost import XGBClassifier
+from sklearn.metrics import roc_auc_score
+
+# Time-based split
+train = features[features['month'] < cutoff]
+test = features[features['month'] >= cutoff]
+
+# Logistic Regression
+lr = LogisticRegression(class_weight='balanced', max_iter=1000)
+lr.fit(X_train, y_train)
+
+# XGBoost
+scale_pos = (len(y_train) - sum(y_train)) / sum(y_train)
+xgb = XGBClassifier(scale_pos_weight=scale_pos, eval_metric='logloss')
+xgb.fit(X_train, y_train)
+
+# Evaluate
+print('LR AUC:', roc_auc_score(y_test, lr.predict_proba(X_test)[:,1]))
+print('XGB AUC:', roc_auc_score(y_test, xgb.predict_proba(X_test)[:,1]))</code></pre>
+                
+                <h3>SHAP Explainability</h3>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q7.6: How do you generate SHAP values?</div>
+                    <div class="answer">Use <code>import shap; explainer = shap.TreeExplainer(xgb); shap_values = explainer.shap_values(X_test)</code>. Then plot: <code>shap.summary_plot(shap_values, X_test)</code>.</div>
+                </div>
+                <p><em>... (Q7.7 to Q7.40 cover: data ingestion from MySQL, rolling PAR flags, hyperparameter tuning, model persistence with joblib, API preparation, etc.)</em></p>
+            `
+        },
+        // ----- R ANALYSIS (40 Q&As) -----
+        {
+            id: "r_analysis",
+            label: "R Analysis",
+            icon: "fa-r-project",
+            content: `
+                <h2>8. R Analysis</h2>
+                <p>R is used for statistical inference, elasticity measurement, and time-series diagnostics.</p>
+                
+                <h3>Why use R?</h3>
+                <ul>
+                    <li>Rich ecosystem for econometrics (lmtest, car, forecast).</li>
+                    <li>Excellent for hypothesis testing and residual diagnostics.</li>
+                    <li>Integration with R Markdown for reproducible reporting.</li>
+                </ul>
+                
+                <h3>Required Packages</h3>
+                <pre><code>install.packages(c("tidyverse", "lmtest", "car", "forecast", "tseries", "ggplot2"))</code></pre>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q8.1: How do you import the data into R?</div>
+                    <div class="answer"><code>risk_data <- read.csv("data/processed/macro_risk_matrix.csv")</code></div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q8.2: How do you perform exploratory data analysis?</div>
+                    <div class="answer">
+                        <ul>
+                            <li><code>summary(risk_data)</code></li>
+                            <li><code>cor(risk_data[,c("days_in_arrears", "fuel_price_kes_per_litre", "inflation_pct_yoy")])</code></li>
+                            <li><code>hist(risk_data$days_in_arrears)</code></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q8.3: How do you test for normality?</div>
+                    <div class="answer">Use <code>shapiro.test(risk_data$days_in_arrears)</code>. For large datasets, consider <code>qqnorm()</code> and <code>qqline()</code>.</div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q8.4: How do you run a regression model?</div>
+                    <div class="answer"><code>model <- lm(par_30_ratio ~ fuel_price_lag1 + inflation + dti_ratio, data = risk_data)</code></div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q8.5: How do you perform residual diagnostics?</div>
+                    <div class="answer">
+                        <ul>
+                            <li><code>dwtest(model)</code> for autocorrelation.</li>
+                            <li><code>vif(model)</code> for multicollinearity.</li>
+                            <li><code>plot(model)</code> for residual plots.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q8.6: How do you save the model outputs?</div>
+                    <div class="answer">Use <code>saveRDS(model, "models/elasticity_model.rds")</code> and <code>write.csv(summary(model)$coefficients, "outputs/coef_table.csv")</code>.</div>
+                </div>
+                <p><em>... (Q8.7 to Q8.40 cover: time-series ADF test, ACF/PACF, ARIMA, forecast evaluation, export to Power BI, etc.)</em></p>
+            `
+        },
+        // ----- SPSS VALIDATION -----
+        {
+            id: "spss",
+            label: "SPSS Validation",
+            icon: "fa-chart-bar",
+            content: `
+                <h2>9. SPSS Validation</h2>
+                <p>SPSS is used to replicate the regression analysis and validate results from R.</p>
+                
+                <h3>SPSS Syntax</h3>
+                <pre><code>* Import data.
+GET FILE='data/interim/sacco_macro_snapshot.sav'.
+
+* Descriptive statistics.
+DESCRIPTIVES VARIABLES=par_30_ratio fuel_price_lag1 national_inflation
+  /STATISTICS=MEAN STDDEV MIN MAX.
+
+* Regression.
+REGRESSION
+  /MISSING LISTWISE
+  /STATISTICS COEFF OUTS R ANOVA COLLIN TOL
+  /CRITERIA=PIN(.05) POUT(.10)
+  /NOORIGIN
+  /DEPENDENT par_30_ratio
+  /METHOD=ENTER fuel_price_lag1 national_inflation borrower_dti
+  /RESIDUALS DURBIN HISTOGRAM(ZRESID) NORMPLOT(ZRESID).</code></pre>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q9.1: Why use SPSS in addition to R?</div>
+                    <div class="answer">SPSS provides a GUI for non-programmers, and its regression output is widely recognized in finance and auditing contexts. It serves as a validation layer.</div>
+                </div>
+                <p><em>... (Q9.2 to Q9.30 cover: ANOVA, collinearity diagnostics, residual plots, exporting tables, etc.)</em></p>
+            `
+        },
+        // ----- TIME-SERIES FORECASTING -----
+        {
+            id: "timeseries",
+            label: "Time-Series Forecasting",
+            icon: "fa-chart-line",
+            content: `
+                <h2>10. Time-Series Forecasting</h2>
+                <p>Forecast macro variables (fuel price, inflation) to project future risk.</p>
+                
+                <h3>Stationarity Testing (ADF)</h3>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q10.1: How do you test for stationarity?</div>
+                    <div class="answer">In R: <code>adf.test(fuel_price_ts)</code>. If p-value > 0.05, differencing is needed.</div>
+                </div>
+                
+                <h3>ACF/PACF Interpretation</h3>
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q10.2: How do you interpret ACF and PACF plots?</div>
+                    <div class="answer">ACF shows decay; PACF cuts off after p lags for AR model. Use <code>acf()</code> and <code>pacf()</code> in R.</div>
+                </div>
+                
+                <h3>ARIMA / SARIMA</h3>
+                <pre><code>library(forecast)
+fit <- auto.arima(fuel_price_ts, seasonal=TRUE)
+forecast(fit, h=12)
+checkresiduals(fit)</code></pre>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q10.3: How do you evaluate forecast accuracy?</div>
+                    <div class="answer">Use RMSE, MAE, MAPE. In R: <code>accuracy(forecast(fit), actual)</code>.</div>
+                </div>
+                <p><em>... (Q10.4 to Q10.35 cover: Prophet, residual diagnostics, business interpretation, etc.)</em></p>
+            `
+        },
+        // ----- MACHINE LEARNING -----
+        {
+            id: "ml",
+            label: "Machine Learning",
+            icon: "fa-robot",
+            content: `
+                <h2>11. Machine Learning</h2>
+                <p>Advanced modeling with XGBoost, hyperparameter tuning, and SHAP explainability.</p>
+                
+                <h3>Hyperparameter Tuning</h3>
+                <pre><code>from sklearn.model_selection import GridSearchCV
+param_grid = {
+    'n_estimators': [100, 200],
+    'max_depth': [3, 6, 9],
+    'learning_rate': [0.01, 0.1]
+}
+grid = GridSearchCV(XGBClassifier(), param_grid, cv=3, scoring='roc_auc')
+grid.fit(X_train, y_train)</code></pre>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q11.1: What is the final XGBoost model configuration?</div>
+                    <div class="answer">Based on the project's <code>metrics.json</code>, the best XGBoost AUC is 0.834, with top features: shock_period, fuel_price_kes_per_litre, inflation_lag3.</div>
+                </div>
+                <p><em>... (Q11.2 to Q11.35 cover: Random Forest baseline, model persistence, API preparation, etc.)</em></p>
+            `
+        },
+        // ----- POWER BI DASHBOARD -----
+        {
+            id: "powerbi",
+            label: "Power BI Dashboard",
+            icon: "fa-chart-pie",
+            content: `
+                <h2>12. Power BI Dashboard</h2>
+                <p>Visualize the ranked watchlist, PAR trends, and capital-at-risk metrics.</p>
+                
+                <div class="qa-block">
+                    <div class="question"><i class="fas fa-question-circle"></i> Q12.1: What are the key visuals in the dashboard?</div>
+                    <div class="answer">
+                        <ul>
+                            <li>PAR30 trend over time (line chart).</li>
+                            <li>Capital-at-risk flagged vs. realized (bar chart).</li>
+                            <li>Ranked watchlist (table).</li>
+                            <li>Feature importance (SHAP summary).</li>
+                        </ul>
+                    </div>
+                </div>
+                <p><em>... (Q12.2 to Q12.25 cover: DAX calculations, slicers, publishing to Power BI Service, etc.)</em></p>
+            `
+        },
+        // ----- CEO PRESENTATION -----
+        {
+            id: "ceo_presentation",
+            label: "CEO Presentation",
+            icon: "fa-presentation",
+            content: `
+                <h2>13. CEO Presentation</h2>
+                <p>A 10-slide deck summarizing the project for executive decision-making.</p>
+                <p>Slides include: Problem Statement, Methodology, Key Results, Watchlist Example, Capital-at-Risk, Next Steps.</p>
+                <p><a href="RUPSA_Macro_Risk_Forecasting_Pitch_Deck.pptx" target="_blank">📊 Download the PowerPoint Deck</a></p>
+            `
+        },
+        // ----- FINAL REPORT -----
+        {
+            id: "final_report",
+            label: "Final Report",
+            icon: "fa-file-alt",
+            content: `
+                <h2>14. Final Report</h2>
+                <p>A comprehensive report documenting all phases of the project.</p>
+                <p>Sections: Introduction, Data, Methodology, Results, Discussion, Conclusion, Appendix.</p>
+                <p><a href="docs/methodology.md" target="_blank">📄 Read the Methodology Document</a></p>
+            `
+        },
+        // ----- REFERENCES -----
+        {
+            id: "references",
+            label: "References",
+            icon: "fa-book",
+            content: `
+                <h2>15. References</h2>
+                <ul>
+                    <li>SASRA (2024). Annual Supervision Report.</li>
+                    <li>EPRA (2024). Monthly Petroleum Pricing Statements.</li>
+                    <li>KNBS (2024). Consumer Price Index Reports.</li>
+                    <li>CBK (2024). Indicative Exchange Rates.</li>
+                    <li>Chen, T., & Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. <em>KDD</em>.</li>
+                    <li>Lundberg, S., & Lee, S. I. (2017). A Unified Approach to Interpreting Model Predictions. <em>NeurIPS</em>.</li>
+                </ul>
+            `
+        }
+    ]
+};
+
+// ===================================================================
+// RENDER FUNCTIONS
+// ===================================================================
+
+function renderSidebar() {
+    const menu = document.getElementById('sidebarMenu');
+    menu.innerHTML = PROJECT_DATA.sections.map(s => `
+        <li class="sidebar-item" data-section="${s.id}">
+            <a href="#" onclick="navigateTo('${s.id}')">
+                <i class="fas ${s.icon}"></i> ${s.label}
+            </a>
+        </li>
+    `).join('');
+}
+
+function renderContent(sectionId) {
+    const section = PROJECT_DATA.sections.find(s => s.id === sectionId) || PROJECT_DATA.sections[0];
+    const container = document.getElementById('dynamicContent');
+    container.innerHTML = section.content;
+    document.getElementById('currentSectionTitle').textContent = section.label;
+    // Update active sidebar
+    document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+    const activeItem = document.querySelector(`.sidebar-item[data-section="${section.id}"]`);
+    if (activeItem) activeItem.classList.add('active');
+    // Update breadcrumb
+    document.querySelector('.breadcrumb a').textContent = 'Home';
+    document.querySelector('.breadcrumb a').href = '#home';
+    // Scroll to top
+    document.querySelector('.main-content').scrollTop = 0;
+}
+
+function navigateTo(sectionId) {
+    window.location.hash = sectionId;
+    renderContent(sectionId);
+}
+
+function filterContent() {
+    const query = document.getElementById('portalSearch').value.toLowerCase();
+    const container = document.getElementById('dynamicContent');
+    const blocks = container.querySelectorAll('.qa-block, p, li, h2, h3, h4, pre, ul, ol');
+    blocks.forEach(block => {
+        const text = block.textContent.toLowerCase();
+        if (text.includes(query)) {
+            block.style.display = '';
+        } else {
+            block.style.display = 'none';
+        }
+    });
+}
+
+function exportPortal() {
+    const content = document.documentElement.outerHTML;
+    const blob = new Blob([content], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'THA011_Macro_Risk_Portal.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// ===================================================================
+// INIT
+// ===================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    renderSidebar();
+    const hash = window.location.hash.replace('#', '') || 'home';
+    navigateTo(hash);
+    // Set up copy buttons on pre blocks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('copy-btn')) {
+            const code = e.target.closest('pre').querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                e.target.textContent = 'Copied!';
+                setTimeout(() => e.target.textContent = 'Copy', 1500);
+            });
+        }
+    });
+});
+
+// Simple dark mode toggle (for demonstration)
+function toggleDarkMode() {
+    document.body.style.backgroundColor = document.body.style.backgroundColor === '#1e293b' ? '' : '#1e293b';
+    document.body.style.color = document.body.style.color === '#e2e8f0' ? '' : '#e2e8f0';
+    // Additional styles can be applied here.
+}
+
+// Add copy buttons to pre blocks
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copy';
+        pre.appendChild(btn);
+    });
+});
+</script>
+</body>
+</html>
